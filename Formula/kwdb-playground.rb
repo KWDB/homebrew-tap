@@ -44,13 +44,13 @@ class KwdbPlayground < Formula
 
   def caveats
     <<~EOS
-      Start the KWDB Playground server:
-        kwdb-playground server
+      To get started, simply run:
+        kwdb-playground start
 
       The server will run on http://localhost:3006 by default.
 
       For configuration options:
-        kwdb-playground server --help
+        kwdb-playground --help
     EOS
   end
 
