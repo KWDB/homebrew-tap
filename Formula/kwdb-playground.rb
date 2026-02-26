@@ -1,13 +1,13 @@
 class KwdbPlayground < Formula
   desc "Interactive KWDB learning platform with Docker-based hands-on exercises"
   homepage "https://github.com/kwdb/playground"
-  version "0.5.1"
+  version "0.6.0"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-arm64.tar.gz"
-      sha256 "86e42c2d727e7b027bb021f27d4e186c5ee2701b9123ac80ccf2aa084f41d90e"
+      sha256 "3f78141360f4b979607b41ccceb71b5b7b60cfd068df7bc5c7dc0f175fbc935e"
 
       def install
         bin.install "kwdb-playground"
@@ -15,7 +15,7 @@ class KwdbPlayground < Formula
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-amd64.tar.gz"
-      sha256 "11522ae2b796c5cfc8977ecd749a40224e73fd9aabac7b432ab7b91874fc87e0"
+      sha256 "f356de4cf2422060e652738f4754cd0cffe49565467a94fbb5330b4b627b4188"
 
       def install
         bin.install "kwdb-playground"
@@ -26,7 +26,7 @@ class KwdbPlayground < Formula
   on_linux do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-arm64.tar.gz"
-      sha256 "05f869ff68a2a7146465648b7358ad0a6c0461fcbe416bdf2c7c269e0d84f04c"
+      sha256 "d59e53b4a4d993080399bc2c520be5839bf65a67e11d820e0111e6b67b89b903"
 
       def install
         bin.install "kwdb-playground"
@@ -34,7 +34,7 @@ class KwdbPlayground < Formula
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-amd64.tar.gz"
-      sha256 "c40a6752be75b3be01ff92ca754dc350ee97c6c7434d182b26f8be6061753dee"
+      sha256 "eb0b2e7e58a7a1abcae1215de08f7e744544d48cf7765ff99dd6cce3ef57a238"
 
       def install
         bin.install "kwdb-playground"
