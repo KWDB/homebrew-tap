@@ -1,0 +1,148 @@
+name: Deploy kwdb-playground specified version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: kwdb-playground release version, for example 0.6.0
+        required: true
+        type: string
+      update_latest:
+        description: update Formula/kwdb-playground.rb to this version
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts and calculate checksums
+        id: checksums
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+          base_url="https://github.com/kwdb/playground/releases/download/v${VERSION}"
+
+          macos_arm_file="kwdb-playground-darwin-arm64.tar.gz"
+          macos_intel_file="kwdb-playground-darwin-amd64.tar.gz"
+          linux_arm_file="kwdb-playground-linux-arm64.tar.gz"
+          linux_intel_file="kwdb-playground-linux-amd64.tar.gz"
+
+          curl -fsSL -o "${macos_arm_file}" "${base_url}/${macos_arm_file}"
+          curl -fsSL -o "${macos_intel_file}" "${base_url}/${macos_intel_file}"
+          curl -fsSL -o "${linux_arm_file}" "${base_url}/${linux_arm_file}"
+          curl -fsSL -o "${linux_intel_file}" "${base_url}/${linux_intel_file}"
+
+          echo "macos_arm_sha=$(sha256sum "${macos_arm_file}" | awk '{print $1}')" >> "${GITHUB_OUTPUT}"
+          echo "macos_intel_sha=$(sha256sum "${macos_intel_file}" | awk '{print $1}')" >> "${GITHUB_OUTPUT}"
+          echo "linux_arm_sha=$(sha256sum "${linux_arm_file}" | awk '{print $1}')" >> "${GITHUB_OUTPUT}"
+          echo "linux_intel_sha=$(sha256sum "${linux_intel_file}" | awk '{print $1}')" >> "${GITHUB_OUTPUT}"
+
+      - name: Update formula
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          UPDATE_LATEST: ${{ github.event.inputs.update_latest }}
+          MACOS_ARM_SHA: ${{ steps.checksums.outputs.macos_arm_sha }}
+          MACOS_INTEL_SHA: ${{ steps.checksums.outputs.macos_intel_sha }}
+          LINUX_ARM_SHA: ${{ steps.checksums.outputs.linux_arm_sha }}
+          LINUX_INTEL_SHA: ${{ steps.checksums.outputs.linux_intel_sha }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          formula = Path("Formula/kwdb-playground.rb")
+          content = formula.read_text()
+
+          version = os.environ["VERSION"]
+          shas = [
+              os.environ["MACOS_ARM_SHA"],
+              os.environ["MACOS_INTEL_SHA"],
+              os.environ["LINUX_ARM_SHA"],
+              os.environ["LINUX_INTEL_SHA"],
+          ]
+          update_latest = os.environ["UPDATE_LATEST"].lower() == "true"
+
+          def apply_version_and_shas(original):
+              updated, count = re.subn(r'version\s+"[^"]+"', f'version "{version}"', original, count=1)
+              if count != 1:
+                  raise SystemExit("version field not found in formula")
+
+              sha_index = {"value": 0}
+
+              def replace_sha(match):
+                  index = sha_index["value"]
+                  if index >= len(shas):
+                      raise SystemExit("more sha256 entries than expected")
+                  new_value = f'sha256 "{shas[index]}"'
+                  sha_index["value"] = index + 1
+                  return new_value
+
+              updated = re.sub(r'sha256\s+"[0-9a-f]{64}"', replace_sha, updated)
+              if sha_index["value"] != 4:
+                  raise SystemExit("sha256 entries count is not 4")
+              return updated
+
+          latest_content = apply_version_and_shas(content)
+          if update_latest:
+              formula.write_text(latest_content)
+
+          versioned_content = latest_content
+          versioned_class = f'KwdbPlaygroundAT{re.sub(r"[^0-9A-Za-z]", "", version)}'
+          versioned_content, count = re.subn(
+              r'^class\s+KwdbPlayground\s+<\s+Formula$',
+              f'class {versioned_class} < Formula',
+              versioned_content,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("class declaration not found in formula")
+
+          versioned_content, count = re.subn(
+              r'^(  license\s+"[^"]+")$',
+              r'\1\n\n  keg_only :versioned_formula',
+              versioned_content,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("license field not found in formula")
+
+          versioned_formula = Path(f"Formula/kwdb-playground@{version}.rb")
+          versioned_formula.write_text(versioned_content)
+          PY
+
+      - name: Validate formula syntax
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          UPDATE_LATEST: ${{ github.event.inputs.update_latest }}
+        run: |
+          set -euo pipefail
+          if [ "${UPDATE_LATEST}" = "true" ]; then
+            ruby -c Formula/kwdb-playground.rb
+          fi
+          ruby -c "Formula/kwdb-playground@${VERSION}.rb"
+
+      - name: Commit and push
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "${{ github.event.inputs.update_latest }}" = "true" ]; then
+            git add Formula/kwdb-playground.rb
+          fi
+          git add "Formula/kwdb-playground@${VERSION}.rb"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: add kwdb-playground formula v${VERSION}"
+          git push
