@@ -9,22 +9,22 @@ class KwdbPlaygroundAT100 < Formula
   on_macos do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-arm64.tar.gz"
-      sha256 "e70e493e5c0def1fb65573eab3764185942d89ade4177a39c9bcb234d943e464"
+      sha256 "05c2437f7fd0f1ad24186fa4449cd7dd48a444be8800921d1b761edc47ba38d9"
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-amd64.tar.gz"
-      sha256 "1122a158dd58bd1835cbfcb13b1d78240718466f6fe213a9aaa5f3f62dd441a1"
+      sha256 "dbf748919cb95fb5b2fca4098be2f98f5e14088749f5f63d835521c4ce49fc23"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-arm64.tar.gz"
-      sha256 "5f261a829aa8cf3992d1784a7685a7a21b2183a1515ce084d61e4161978b675e"
+      sha256 "aac84a719b30c25c5f1639c258dfd2603afe4d7fa9884e002960575c2f25866a"
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-amd64.tar.gz"
-      sha256 "6833d0c93056375c850f7d31ac9670d71f500a646a7138c6bcb2416aabac25c1"
+      sha256 "2f03eb8d5d16ea0f67e878f23b16aed1c4cd82f000d91e27dbccc8737f1cfbc8"
     end
   end
 
