@@ -1,28 +1,28 @@
 class KwdbPlayground < Formula
   desc "Interactive KWDB learning platform with Docker-based hands-on exercises"
   homepage "https://github.com/kwdb/playground"
-  version "0.7.0"
+  version "1.0.0"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-arm64.tar.gz"
-      sha256 "9fbf1a516418d4f299414a0d012ce442e38b1c0ef5c066564d1a2156c8c5edf8"
+      sha256 "a15f1923bb2ffc24fe46a9421a84eff238cdd3fd4c48d6bbe742621d0880bf31"
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-darwin-amd64.tar.gz"
-      sha256 "202ab77aeaae498c69c2852cde387d446bf9df18b3167678a61e36eab3f341bc"
+      sha256 "a9f794982f25983c2d565388f1148ff54022948d54377bc77861d3e477005e22"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-arm64.tar.gz"
-      sha256 "12f981be3087135b3355423f0270172ffd20fccfd5a308264f26b525a2776771"
+      sha256 "815ca559fc02190ed4cc5a4005070096be70f4eda9af7c02a5cae97ea7576cc4"
     end
     on_intel do
       url "https://github.com/kwdb/playground/releases/download/v#{version}/kwdb-playground-linux-amd64.tar.gz"
-      sha256 "97a14d443c2b90a3d7736ea200ed73f3b67344178face447e310a843f1251eaa"
+      sha256 "2a0bd432d9d0b675f2c71283f381f311a03897d8233b93533a9643fd546225c7"
     end
   end
 
