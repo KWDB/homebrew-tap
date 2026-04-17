@@ -1,8 +1,10 @@
-class KwdbPlayground < Formula
+class KwdbPlaygroundAT122 < Formula
   desc "Interactive KWDB learning platform with Docker-based hands-on exercises"
   homepage "https://github.com/kwdb/playground"
   version "1.2.2"
   license "MIT"
+
+  keg_only :versioned_formula
 
   on_macos do
     on_arm do
